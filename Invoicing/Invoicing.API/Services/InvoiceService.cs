@@ -44,7 +44,20 @@ namespace Invoicing.API.Services
 
         public bool DeleteInvoice(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = _genericUnitOfWork.InvoiceRepository.Get(c => c.Id == id /*&& c.IsDeleted == false*/).FirstOrDefault();
+                if (category == null) return false;
+
+                _genericUnitOfWork.InvoiceRepository.Delete(category);
+                _genericUnitOfWork.Commit();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
     }
