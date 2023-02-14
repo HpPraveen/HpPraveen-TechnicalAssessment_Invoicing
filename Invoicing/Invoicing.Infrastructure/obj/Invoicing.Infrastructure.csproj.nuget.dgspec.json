@@ -124,6 +124,10 @@
             "Microsoft.EntityFrameworkCore.Cosmos": {
               "target": "Package",
               "version": "[7.0.2, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             }
           },
           "imports": [

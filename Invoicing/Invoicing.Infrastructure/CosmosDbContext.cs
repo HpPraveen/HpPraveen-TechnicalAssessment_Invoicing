@@ -1,18 +1,25 @@
 ﻿using Invoicing.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Invoicing.Infrastructure
 {
     public class CosmosDbContext : DbContext
     {
         public DbSet<Invoice>? Invoices { get; set; }
+        private readonly IConfiguration _configuration;
 
+        public CosmosDbContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseCosmos(
-                "https://cosmos-db-assessment.documents.azure.com:443/",
-                "K2JatS1K06KfWkC07FdP8FB24XoWDdqV62typLAcTX9BcDuEEF8JM3aanejrKSTxH2TtfWWlOQUsACDbr37ueg==",
-                "invoicing-db");
+            var endPointUri = _configuration["CosmosDb:EndPointUri"];
+            var accountKey = _configuration["CosmosDb:AccountKey"];
+            var db = _configuration["CosmosDb:DB"];
+
+            optionsBuilder.UseCosmos(endPointUri, accountKey, db);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

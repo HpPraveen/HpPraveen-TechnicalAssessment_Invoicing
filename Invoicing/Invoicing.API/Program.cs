@@ -13,7 +13,7 @@ builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
 builder.Services.AddScoped<IGenericUnitOfWork, GenericUnitOfWork>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
-using (var cosmosDbContext = new CosmosDbContext()) { }
+//using (var cosmosDbContext = new CosmosDbContext()) { }
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
