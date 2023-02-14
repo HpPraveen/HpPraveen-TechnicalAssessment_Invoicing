@@ -23,6 +23,7 @@ namespace Invoicing.API.Services
             return _mapper.Map<InvoiceDto>(invoiceDetails);
         }
 
+        //--Get invoices with pagination --//
         public object GetInvoices(int pageNumber, int pageSize)
         {
             static IOrderedQueryable<Invoice> OrderBy(IQueryable<Invoice> o) => o.OrderByDescending(i => i.SysCreatedOn);
@@ -39,7 +40,37 @@ namespace Invoicing.API.Services
 
         public object CreateUpdateInvoice(InvoiceDto invoiceDto)
         {
-            throw new NotImplementedException();
+
+            var invoice = _mapper.Map<Invoice>(invoiceDto);
+
+            #region Amount Calculations
+
+            decimal totalAmount = 0;
+            foreach (var invoiceLines in invoice.InvoiceLines)
+            {
+                //--calculate line amount--//
+                invoiceLines.LineAmount = invoiceLines.Quantity * invoiceLines.UnitPrice;
+                //--calculate total amount--//
+                totalAmount += invoiceLines.LineAmount;
+            }
+            invoice.TotalAmount = totalAmount;
+
+            #endregion
+
+            if (!string.IsNullOrEmpty(invoice.Id)) //update Invoice//
+            {
+                invoice.SysUpdatedOn = DateTime.Now;
+                _genericUnitOfWork.InvoiceRepository.Update(invoice);
+            }
+            else //create Invoice//
+            {
+                invoice.Id = Guid.NewGuid().ToString();
+                invoice.SysCreatedOn = DateTime.Now;
+                _genericUnitOfWork.InvoiceRepository.Insert(invoice);
+            }
+
+            _genericUnitOfWork.Commit();
+            return _mapper.Map<InvoiceDto>(invoice);
         }
 
         public bool DeleteInvoice(string id)
