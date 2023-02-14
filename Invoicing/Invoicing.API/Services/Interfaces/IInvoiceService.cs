@@ -4,7 +4,7 @@ namespace Invoicing.API.Services.Interfaces
 {
     public interface IInvoiceService
     {
-        object GetInvoiceById(string id);
+        InvoiceDto GetInvoiceById(string id);
         object GetInvoices(int pageNumber, int pageSize);
         object CreateUpdateInvoice(InvoiceDto invoiceDto);
         bool DeleteInvoice(string id);

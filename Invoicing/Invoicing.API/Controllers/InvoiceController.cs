@@ -24,7 +24,7 @@ namespace Invoicing.API.Controllers
 
 
         [HttpGet]
-        [Route("GetInvoice/{invoiceId}")]
+        [Route("{invoiceId}")]
         public object GetInvoiceById(string invoiceId)
         {
             try
@@ -45,7 +45,7 @@ namespace Invoicing.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllInvoices/{pageNumber}/{pageSize}")]
+        [Route("{pageNumber}/{pageSize}")]
         public object GetInvoices(int pageNumber, int pageSize)
         {
             try
@@ -63,11 +63,11 @@ namespace Invoicing.API.Controllers
         }
 
         [HttpPost]
-        [Route("CreInvoice")]
         public object CreateInvoice([FromBody] InvoiceDto invoiceDto)
         {
             try
             {
+
                 var result = _invoiceService.CreateUpdateInvoice(invoiceDto);
 
                 _response.Result = result;
@@ -85,15 +85,28 @@ namespace Invoicing.API.Controllers
         }
 
         [HttpPut]
-        [Route("UpdInvoice")]
         public object UpdateInvoice([FromBody] InvoiceDto invoiceDto)
         {
             try
             {
-                var result = _invoiceService.CreateUpdateInvoice(invoiceDto);
+                if (invoiceDto.Id != null)
+                {
+                    var existingInvoice = _invoiceService.GetInvoiceById(invoiceDto.Id);
 
-                _response.Result = result;
-                _response.DisplayMessage = "Invoice is updated";
+                    switch (existingInvoice?.Id)
+                    {
+                        case null:
+                            _response.Result = null;
+                            break;
+                        default:
+                            {
+                                var result = _invoiceService.CreateUpdateInvoice(invoiceDto);
+                                _response.Result = result;
+                                break;
+                            }
+                    }
+                }
+                _response.DisplayMessage = _response.Result == null ? "Invoice not found" : "Invoice is updated";
             }
             catch (Exception ex)
             {
@@ -107,7 +120,7 @@ namespace Invoicing.API.Controllers
         }
 
         [HttpDelete]
-        [Route("DelInvoice/{invoiceId}")]
+        [Route("{invoiceId}")]
         public object DeleteInvoice(string invoiceId)
         {
             try

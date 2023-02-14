@@ -17,7 +17,7 @@ namespace Invoicing.API.Services
             _mapper = mapper;
         }
 
-        public object GetInvoiceById(string id)
+        public InvoiceDto GetInvoiceById(string id)
         {
             var invoiceDetails = _genericUnitOfWork.InvoiceRepository.Get(i => i.Id == id, includeProperties: "InvoiceLines").FirstOrDefault();
             return _mapper.Map<InvoiceDto>(invoiceDetails);
@@ -69,7 +69,7 @@ namespace Invoicing.API.Services
                 _genericUnitOfWork.InvoiceRepository.Insert(invoice);
             }
 
-            _genericUnitOfWork.Commit();
+            _genericUnitOfWork.CommitAsync();
             return _mapper.Map<InvoiceDto>(invoice);
         }
 
@@ -77,10 +77,7 @@ namespace Invoicing.API.Services
         {
             try
             {
-                var category = _genericUnitOfWork.InvoiceRepository.Get(c => c.Id == id /*&& c.IsDeleted == false*/).FirstOrDefault();
-                if (category == null) return false;
-
-                _genericUnitOfWork.InvoiceRepository.Delete(category);
+                _genericUnitOfWork.InvoiceRepository.Delete(id);
                 _genericUnitOfWork.Commit();
 
                 return true;

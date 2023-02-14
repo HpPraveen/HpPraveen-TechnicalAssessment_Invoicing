@@ -36,7 +36,7 @@ namespace Invoicing.Infrastructure.Repository
             query = includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Aggregate(query, (current, includeProperty) => current?.Include(includeProperty));
 
-            return orderBy != null ? orderBy(query ?? throw new InvalidOperationException()).ToList() : (query ?? throw new InvalidOperationException()).ToList();
+            return orderBy != null ? orderBy(query ?? throw new InvalidOperationException()).AsNoTracking().ToList() : (query ?? throw new InvalidOperationException()).AsNoTracking().ToList();
         }
 
         public virtual object GetPaging(List<Expression<Func<T, bool>>>? filters = null,

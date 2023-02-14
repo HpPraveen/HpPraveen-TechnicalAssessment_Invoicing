@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Invoicing.Domain
+﻿namespace Invoicing.Domain
 {
     public class Invoice : BaseEntity
     {
-        [Key]
         public string? Id { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
